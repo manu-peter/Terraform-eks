@@ -54,3 +54,24 @@ resource "aws_security_group_rule" "cluster_self" {
   source_security_group_id = aws_security_group.cluster_sg.id
   security_group_id        = aws_security_group.cluster_sg.id
 }
+
+# VPC Endpoints security group
+resource "aws_security_group" "endpoint_sg" {
+  name        = "${var.cluster_name}-endpoint-sg"
+  description = "VPC Endpoints security group"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

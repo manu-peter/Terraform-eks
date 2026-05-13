@@ -6,7 +6,7 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [var.bastion_sg_id]
   associate_public_ip_address = true
 
-  user_data = base64encode(<<-EOF
+  user_data = <<-EOF
     #!/bin/bash
     apt-get update -y
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -14,13 +14,12 @@ resource "aws_instance" "bastion" {
     unzip awscliv2.zip
     ./aws/install
     rm -rf aws awscliv2.zip
-    curl -LO "https://dl.k8s.io/release/$$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     chmod +x kubectl
     mv kubectl /usr/local/bin/
     apt-get install -y tree jq git
     echo "Bastion ready!" > /home/ubuntu/setup-done.txt
   EOF
-  )
 
   root_block_device {
     volume_size = 20
